@@ -4,30 +4,20 @@
 <meta charset="UTF-8">
 <title>Word Chain Game</title>
 
-<!-- 🔒 verhindert Springen & Zoomen -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<!-- Pixel Font -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-html, body {
-  height: 100%;
-  margin: 0;
-}
-
-/* 🔒 Fester Center-Wrapper */
+html, body { height: 100%; margin: 0; }
 body {
   display: grid;
-  place-items: center;          /* ✅ IMMER exakt mittig */
+  place-items: center;
   background: #000000;
   color: white;
   font-family: Arial, sans-serif;
   text-align: center;
-  overflow-x: hidden;           /* ❌ kein seitliches Rutschen */
+  overflow-x: hidden;
 }
-
-/* 🟦 TABLET / SPIELBOX */
 #gameContainer {
   width: 90%;
   max-width: 700px;
@@ -35,32 +25,25 @@ body {
   background: #000000;
   border-radius: 15px;
   box-shadow: 0 0 25px rgba(255,255,255,0.08);
-  box-sizing: border-box;       /* 🔒 stabil */
+  box-sizing: border-box;
 }
-
-/* 🟩 PIXEL TITLE */
 h1 {
   font-size: 1.8em;
   margin-bottom: 20px;
   color: #4dd0e1;
   font-family: 'Press Start 2P', cursive;
 }
-
-/* 🧠 WORD DISPLAY */
 #wordDisplay {
   font-size: 1.4em;
   margin: 20px 0;
   min-height: 50px;
   font-family: 'Press Start 2P', cursive;
 }
-
-/* INPUT */
 #inputContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
 #playerWord {
   width: 80%;
   max-width: 400px;
@@ -70,10 +53,8 @@ h1 {
   border: none;
   margin-bottom: 15px;
   text-align: center;
-  box-sizing: border-box;   /* 🔒 kein Springen */
+  box-sizing: border-box;
 }
-
-/* BUTTON */
 button {
   padding: 12px 25px;
   font-size: 1em;
@@ -84,18 +65,8 @@ button {
   cursor: pointer;
   transition: all 0.2s;
 }
-
-button:hover {
-  background: #4caf50;
-}
-
-#message {
-  margin-top: 20px;
-  font-size: 1em;
-  min-height: 40px;
-}
-
-/* 📱 MOBILE */
+button:hover { background: #4caf50; }
+#message { margin-top: 20px; font-size: 1em; min-height: 40px; }
 @media (max-width: 768px) {
   h1 { font-size: 1.4em; }
   #wordDisplay { font-size: 1.2em; }
@@ -106,10 +77,8 @@ button:hover {
 </head>
 
 <body>
-
 <div id="gameContainer">
   <h1>Word Chain Game 🧠</h1>
-
   <div id="wordDisplay">Start word: Apple</div>
 
   <div id="inputContainer">
@@ -141,18 +110,31 @@ const wordList = [
 
 function playWord() {
   const input = document.getElementById("playerWord");
-  const word = input.value.trim();
+  let word = input.value.trim().toLowerCase();
+  word = word.charAt(0).toUpperCase() + word.slice(1);
   const message = document.getElementById("message");
 
   if (!word) return;
 
   const lastChar = currentWord.slice(-1).toLowerCase();
+  const reversed = currentWord.split("").reverse().join("").toLowerCase();
+
   if (word[0].toLowerCase() !== lastChar) {
     message.textContent = `❌ Your word must start with "${lastChar.toUpperCase()}"`;
     return;
   }
 
-  if (usedWords.includes(word)) {
+  if (word.toLowerCase() === currentWord.toLowerCase()) {
+    message.textContent = "❌ You cannot repeat the same word!";
+    return;
+  }
+
+  if (word.toLowerCase() === reversed) {
+    message.textContent = "❌ Reversed words are not allowed!";
+    return;
+  }
+
+  if (usedWords.map(w => w.toLowerCase()).includes(word.toLowerCase())) {
     message.textContent = "❌ This word was already used!";
     return;
   }
