@@ -2,115 +2,102 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<!-- ✅ WICHTIG: verhindert Zoomen & seitliches Springen -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 <title>Word Chain Game</title>
 
+<!-- Pixel Font -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
 <style>
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Arial, sans-serif;
-  background: #000000;
-  color: white;
-  text-align: center;
-  overflow-x: hidden; /* 🔒 kein seitliches Scrollen */
-}
+  html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background: #000000; /* ✅ Hintergrund SCHWARZ */
+    color: white;
+    text-align: center;
+  }
 
-#gameContainer {
-  width: 90%;
-  max-width: 700px;
-  padding: 20px;
-  background: #000000;
-  border-radius: 15px;
-  border: 2px solid #333;
-}
+  #gameContainer {
+    width: 90%;
+    max-width: 700px;
+    padding: 20px;
+    background: #000000; /* ✅ Tablet SCHWARZ */
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(255,255,255,0.08);
+  }
 
-/* 🟩 PIXEL STYLE TITLE */
-h1 {
-  font-family: "Courier New", monospace;
-  font-size: 2.4em;
-  margin-bottom: 20px;
-  color: #00ffcc;
-  text-shadow: 2px 2px #006666;
-}
+  h1 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #4dd0e1;
+    font-family: 'Press Start 2P', cursive; /* Pixel Style */
+  }
 
-#wordDisplay {
-  font-size: 2em;
-  margin: 20px 0;
-  min-height: 50px;
-}
+  #wordDisplay {
+    font-size: 1.4em;
+    margin: 20px 0;
+    min-height: 50px;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+  }
 
-#inputContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  #inputContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-#playerWord {
-  width: 80%;
-  max-width: 400px;
-  box-sizing: border-box; /* 🔒 stabil */
-  font-size: 1.3em;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 15px;
-  text-align: center;
-}
+  #playerWord {
+    width: 80%;
+    font-size: 1em;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 15px;
+    text-align: center;
+  }
 
-button {
-  padding: 14px 28px;
-  font-size: 1.3em;
-  border: none;
-  border-radius: 10px;
-  background: #2e7d32;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s;
-}
+  button {
+    padding: 12px 25px;
+    font-size: 1em;
+    border: none;
+    border-radius: 10px;
+    background: #2e7d32;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
 
-button:hover {
-  background: #4caf50;
-}
+  button:hover {
+    background: #4caf50;
+  }
 
-#message {
-  margin-top: 20px;
-  font-size: 1.4em;
-  min-height: 40px;
-}
+  #message {
+    margin-top: 20px;
+    font-size: 1em;
+    min-height: 40px;
+    color: white;
+  }
 
-@media (max-width: 768px) {
-  h1 { font-size: 2em; }
-  #wordDisplay { font-size: 1.6em; }
-  #playerWord { font-size: 1.2em; }
-  button { font-size: 1.2em; }
-}
+  @media (max-width: 768px) {
+    h1 { font-size: 1.4em; }
+    #wordDisplay { font-size: 1.2em; }
+    #playerWord { font-size: 0.9em; }
+    button { font-size: 0.9em; padding: 10px 20px; }
+  }
 </style>
 </head>
-
 <body>
 
 <div id="gameContainer">
-  <h1>WORD CHAIN GAME</h1>
-
+  <h1>Word Chain Game 🧠</h1>
   <div id="wordDisplay">Start word: Apple</div>
 
   <div id="inputContainer">
-    <input 
-      type="text" 
-      id="playerWord" 
-      placeholder="Type your word here"
-      inputmode="text"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="none"
-    >
+    <input type="text" id="playerWord" placeholder="Type your word here" autofocus>
     <button onclick="playWord()">OK</button>
   </div>
 
@@ -130,32 +117,31 @@ const wordList = [
 
 function playWord() {
   const input = document.getElementById("playerWord");
-  const playerWord = input.value.trim();
-  const messageDiv = document.getElementById("message");
+  const word = input.value.trim();
+  const message = document.getElementById("message");
 
-  if (!playerWord) return;
+  if (!word) return;
 
   const lastChar = currentWord.slice(-1).toLowerCase();
-  if (playerWord[0].toLowerCase() !== lastChar) {
-    messageDiv.textContent = `❌ Word must start with "${lastChar.toUpperCase()}"`;
+  if (word[0].toLowerCase() !== lastChar) {
+    message.textContent = `❌ Your word must start with "${lastChar.toUpperCase()}"`;
     return;
   }
 
-  if (usedWords.includes(playerWord)) {
-    messageDiv.textContent = "❌ Word already used!";
+  if (usedWords.includes(word)) {
+    message.textContent = "❌ This word was already used!";
     return;
   }
 
-  usedWords.push(playerWord);
-  currentWord = playerWord;
+  usedWords.push(word);
+  currentWord = word;
   document.getElementById("wordDisplay").textContent = `Your word: ${currentWord}`;
   input.value = "";
-  messageDiv.textContent = "";
+  message.textContent = "";
 
   setTimeout(aiTurn, 500);
 }
 
-/* 🧠 SMART AI */
 function aiTurn() {
   const lastChar = currentWord.slice(-1).toLowerCase();
   const possible = wordList.filter(
@@ -164,7 +150,7 @@ function aiTurn() {
 
   if (possible.length === 0) {
     document.getElementById("message").textContent =
-      "🎉 You win! AI has no word.";
+      "🎉 You win! The AI has no word.";
     return;
   }
 
