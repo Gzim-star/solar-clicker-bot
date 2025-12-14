@@ -108,7 +108,7 @@ button:hover {
 <body>
 
 <div id="gameContainer">
-  <h1>🧠</h1>
+  <h1>Word Chain Game 🧠</h1>
 
   <div id="wordDisplay">Start word: Apple</div>
 
@@ -140,6 +140,10 @@ const wordList = [
 ];
 
 function playWord() {
+  const input = document.getElementById("playerWord");
+  const word = input.value.trim();
+  const message = document.getElementById("message");
+
   let word = input.value.trim().toLowerCase();
 word = word.charAt(0).toUpperCase() + word.slice(1);
 
@@ -165,7 +169,6 @@ if (usedWords.map(w => w.toLowerCase()).includes(word.toLowerCase())) {
   message.textContent = "❌ This word was already used!";
   return;
 }
-
   if (!word) return;
 
   const lastChar = currentWord.slice(-1).toLowerCase();
