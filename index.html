@@ -166,7 +166,7 @@ function aiTurn() {
       const randomWord = remaining[Math.floor(Math.random() * remaining.length)];
       usedWords.push(randomWord);
       currentWord = randomWord;
-      document.getElementById("wordDisplay").textContent = `Next: ${currentWord}`;
+      document.getElementById("wordDisplay").textContent = ` ${currentWord}`;
     }
     return;
   }
@@ -187,7 +187,7 @@ function aiTurn() {
 
   usedWords.push(best);
   currentWord = best;
-  document.getElementById("wordDisplay").textContent = `Next: ${currentWord}`;
+  document.getElementById("wordDisplay").textContent = ` ${currentWord}`;
 }
 </script>
 
