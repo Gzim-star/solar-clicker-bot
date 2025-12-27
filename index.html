@@ -2,171 +2,336 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Word Chain Game</title>
-
+<title></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 html, body { height: 100%; margin: 0; }
 body {
-  display: grid;
-  place-items: center;
-  background: #000000;
+  display: grid; place-items: center;
+ /* Hintergrundbild von Pexels – Foto von Markus Spiske */
+  background: url('https://images.pexels.com/photos/1089438/pexels-photo-1089438.jpeg') no-repeat center center;
+  background-size: cover;
   color: white;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  overflow-x: hidden;
+  font-family: Arial, sans-pixel; text-align: center;
 }
 #gameContainer {
-  width: 90%;
-  max-width: 700px;
-  padding: 20px;
-  background: #000000;
-  border-radius: 15px;
+  width: 90%; max-width: 700px; min-height: 520px;
+  padding: 20px;  border-radius: 15px;
   box-shadow: 0 0 25px rgba(255,255,255,0.08);
-  box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-h1 {
-  font-size: 1.8em;
-  margin-bottom: 20px;
-  color: #4dd0e1;
-  font-family: 'Press Start 2P', cursive;
+  #tipButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: whith;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 2000;
 }
-#wordDisplay {
-  font-size: 1.4em;
-  margin: 20px 0;
-  min-height: 50px;
-  font-family: 'Press Start 2P', cursive;
+#tipButton:hover { color: #00000000; }
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00000000;
 }
-#inputContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#playerWord {
+.modal-content {
+  background-color: #0000000c;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 12px;
   width: 80%;
   max-width: 400px;
-  font-size: 1em;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 15px;
-  text-align: center;
-  box-sizing: border-box;
+  color: whith;
+  text-align: left;
+  max-height: 63vh; /* maximale Höhe */
+  overflow-y: auto;  /* scrollen, wenn Text zu lang ist */
 }
-button {
-  padding: 12px 25px;
-  font-size: 1em;
-  border: none;
-  border-radius: 10px;
-  background: #2e7d32;
-  color: white;
+.close {
+  color: #00000000;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s;
 }
-button:hover { background: #4caf50; }
+.close:hover { color: #00000000; }
+ 
+h1 { font-size: 1.8em; margin-bottom: 20px; color: #2e7d32; font-family: 'Press Start 2P', cursive; }
+#task, #wordDisplay { font-size: 1.4em; margin: 20px 0; min-height: 50px; font-family: 'Press Start 2P', cursive; word-break: keep-all; }
+#inputContainer { display: flex; flex-direction: column; align-items: center; }
+#playerWord, #answer { width: 80%; max-width: 400px; font-size: 1em; padding: 10px; border-radius: 10px; border: none; margin-bottom: 15px; text-align: center; box-sizingss: border-box; }
+button { padding: 12px 25px; font-size: 1em; border: none; border-radius: 10px; background: #2e7d32; color: white; cursor: pointer; transition: all 0.2s; }
+button:hover { background: #00000000; }
 #message { margin-top: 20px; font-size: 1em; min-height: 40px; }
-@media (max-width: 768px) {
-  h1 { font-size: 1.4em; }
-  #wordDisplay { font-size: 1.2em; }
-  #playerWord { font-size: 0.9em; }
-  button { font-size: 0.9em; padding: 10px 20px; }
+#timer { margin-top: 15px; font-size: 1em; font-weight: bold; }
+.timer-green { color: #4caf50; }
+.timer-yellow { color: #ffc107; }
+.timer-red { color: #f44336; }
+
+/* ===================== Tic-Tac-Toe & Chromatic Styles ===================== */
+#boardWrapper { display: flex; align-items: center; justify-content: center; width: 100%; }
+#board { display: grid; grid-template-columns: repeat(3, 120px); grid-template-rows: repeat(3, 120px); gap: 12px; margin-top:20px; }
+.cell { width:120px; height:120px; display:flex; align-items:center; justify-content:center; font-size:48px; cursor:pointer; transition: transform 0.15s, filter 0.15s; color:white; font-weight:bold; border-radius:15px; }
+.cell:hover { transform: scale(1.05); filter: brightness(1.15); }
+#scoreboard, #level { margin-top:10px; color:white; }
+
+#grid { display: grid; grid-template-columns: repeat(3, 120px); grid-template-rows: repeat(3, 120px); gap: 12px; margin-top:20px; }
+.tile { width: 120px; height: 120px; border-radius: 15px; cursor: pointer; transition: transform 0.15s, filter 0.15s; }
+.tile:hover { transform: scale(1.05); filter: brightness(1.15); }
+
+@media (max-width:768px){
+  h1{font-size:1.4em;} #task, #wordDisplay{font-size:1.2em;} #playerWord, #answer{font-size:0.9em;}
+  button{font-size:0.9em; padding:10px 20px;} #board{grid-template-columns:repeat(3,100px);grid-template-rows:repeat(3,100px);} .cell{width:100px;height:100px;font-size:40px;}
+}
+@media (max-width:600px){#grid{grid-template-columns: repeat(3, 90px); grid-template-rows: repeat(3, 90px);} .tile{width: 90px; height: 90px;}}
+/* ❗️ Popup-Text = gleicher Style wie "Only the right words will take you further" */
+.modal-content p,
+.modal-content li {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.8em;
+  color: whith;
+}
+.modal.open {
+  display: block;
+}
+/* ➕ Zeilenumbrüche korrekt anzeigen */
+.modal-content p {
+  white-space: pre-line;
 }
 </style>
 </head>
-
 <body>
 <div id="gameContainer">
-  <h1>🧠</h1>
-  <div id="wordDisplay">Start word: Apple</div>
+  <h1></h1>
+  <button onclick="startWordChain()">  START  </button>
+</div>
+  <!-- Tip Button -->
+<button id="tipButton">❗️</button>
+
+<!-- Modal für die Tipps -->
+<div id="tipModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p></p>
+  </div>
+</div>
+  <script>
+    // ========================== TIP BUTTON LOGIC ==========================
+const tipButton = document.getElementById('tipButton');
+const tipModal = document.getElementById('tipModal');
+const closeBtn = document.querySelector('.close');
+
+tipButton.onclick = () => {
+  let tipText = '';
+  if(stage === 'start') tipText = `
+BrainTrials:
+    
+
+BrainTrials is a deterministic, rule-based cognitive system designed to validate structured human input under real-time constraints.
+
+The system does not rely on dictionaries, artificial intelligence, machine learning, or probabilistic guessing.
+All outcomes are derived exclusively from explicit rules, state transitions, and input validation logic.
+
+Each interaction is processed synchronously, ensuring immediate feedback without latency, freezing, or hidden computation.
+Invalid inputs are rejected through rule violations rather than semantic interpretation.
+
+The architecture enforces progression through constrained stages, where advancement depends on consistency, pattern recognition, and temporal accuracy.
+This design results in a system that is resistant to brute-force input, random noise, and exploit attempts.
+
+BrainTrials functions as a closed logical environment: correctness emerges from structure, not from stored knowledge.
+All challenges are deterministic and reproducible, providing a consistent and fair testing arena for users.
+
+The system implements multiple game modes—Word Chain, Tic-Tac-Toe, Math Challenge, and Chromatic Trial—each designed to test a different aspect of cognitive processing, including memory, pattern recognition, strategic planning, and rapid decision-making.
+
+Scoring and progression are strictly governed by rules: success depends on precise input, temporal accuracy, and pattern recognition rather than guesswork or probabilistic methods. Users cannot bypass challenges using brute-force or random strategies.
+
+BrainTrials is optimized for instantaneous feedback, ensuring that each action triggers an immediate and deterministic response. The system’s internal logic prevents hidden operations, caching, or delayed evaluation, guaranteeing transparency in every interaction.
+
+Tips: Pay attention to the structure of the system. Logical consistency, awareness of patterns, and strategic foresight are essential to advance. Each game mode builds upon the principles of the previous, requiring both analytical thinking and adaptive strategy.
+    
+You are entering the arena of challenges!
+Only those who think cleverly, react quickly, and recognize patterns can reach the end.
+`;
+
+  else if(stage === 'word') tipText = `
+      Word Chain Tips:
+    
+      • Think of ......
+      • The last letter
+      • Find the Answer
+      • Longer or smarter
+    
+  `;
+
+  else if(stage === 'tic') tipText = `
+      Tic-Tac-Toe Tips:
+    
+      • Get three to win
+      • Block your opponent
+      • Center is powerful
+      • It's simple!
+    
+  `;
+
+  else if(stage === 'math') tipText = `
+      Math Challenge Tips:
+    
+      • Solve quickly 
+      • Time is running!
+      • Correct answers 
+      • Let you advance
+      • Wrong answers
+      • Send you back
+    
+  `;
+
+  else if(stage === 'chromatic') tipText = `
+      Chromatic Trial Tips:
+    
+      • Make all tiles 
+      • The same color
+      • Focus on one color 
+      • Act fast
+      • Grid will reset
+    
+  `;
+  typeText(tipModal.querySelector('p'), tipText, 0.5);
+  
+};
+
+closeBtn.onclick = () => {
+  tipModal.classList.remove('open');
+};
+
+window.onclick = (e) => {
+  if (e.target === tipModal) {
+    tipModal.classList.remove('open');
+  }
+
+};// ========================== TYPEWRITER EFFECT ==========================
+function typeText(element, text, speed = 15) {
+  element.innerHTML = "";
+  let i = 0;
+
+  function typing() {
+    if (i < text.length) {
+      element.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typing, speed);
+    }
+  }
+
+  typing();
+}
+  
+// ========================== VARIABLES ==========================
+let stage='start', wordScore=0, ticScore={player:0,ai:0,draw:0};
+let currentWord='', usedWords=[], wordList=[];
+let board=[], gameOver=false;
+let correctAnswer=0, correctMathCount=0;
+let timer=10, timerInterval;
+let mathTimer=30, mathTimerInterval;
+function showWordError(text) {
+  const message = document.getElementById('message');
+  if (!message) return;
+
+  message.textContent = text;
+  message.style.opacity = "1";
+
+  setTimeout(() => {
+    message.textContent = "";
+  }, 1200);
+}
+// ========================== WORD CHAIN ==========================
+function startWordChain(){
+  stage='word';
+  const container=document.getElementById('gameContainer');
+  container.innerHTML=`
+      <h1></h1>
+  <div id="wordDisplay">Apple</div>
 
   <div id="inputContainer">
-    <input
-      type="text"
-      id="playerWord"
-      placeholder="Type your word here"
-      inputmode="text"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="none"
-    >
-    <button onclick="playWord()">OK</button>
+    <input type="text" id="playerWord" placeholder="Type your word here" autocomplete="off" autocapitalize="none">
+    <button onclick="playWord()"> Check </button>
   </div>
 
   <div id="message"></div>
-</div>
 
-<script>
-// 🔒 Brain-Test Game Original by Gëzim Hasani
-const gameID = "2025-GH-BC01"; // eindeutige ID für dein Spiel
-const gameVersion = "1.0.0";
-const creationDate = "2025-12-14";
-
-let currentWord = "Apple";
-const usedWords = [currentWord];
-
-const wordList = [
-  "Apple","Elephant","Tiger","Rabbit","Tree","Eagle","Egg","Giraffe",
-  "Fish","Horse","Orange","Grapes","Snake","Emu","Umbrella","Lion",
-  "Nut","Tapir","Rat","Tomato","Owl","Lemon","Night","Hat","Turtle",
-  "Eel","Lamb","Bread","Dog","Goat","Ant","Seal","Lily","Yak","Kangaroo"
-];
-
-function playWord() {
-  const input = document.getElementById("playerWord");
-  let word = input.value.trim().toLowerCase();
-  word = word.charAt(0).toUpperCase() + word.slice(1);
-  const message = document.getElementById("message");
-
-  if (!word) return;
-
-  const lastChar = currentWord.slice(-1).toLowerCase();
-  const reversed = currentWord.split("").reverse().join("").toLowerCase();
-
-  if (word[0].toLowerCase() !== lastChar) {
-    message.textContent = "❌ Wrong! Think carefully!";
-    return;
-  }
-
-  if (word.toLowerCase() === currentWord.toLowerCase()) {
-    message.textContent = "❌ You cannot repeat the same word!";
-    return;
-  }
-
-  if (word.toLowerCase() === reversed) {
-    message.textContent = "❌ Reversed words are not allowed!";
-    return;
-  }
-
-  if (usedWords.map(w => w.toLowerCase()).includes(word.toLowerCase())) {
-    message.textContent = "❌ This word was already used!";
-    return;
-  }
-
-  usedWords.push(word);
-  currentWord = word;
-  document.getElementById("wordDisplay").textContent = `Your word: ${currentWord}`;
-  input.value = "";
-  message.textContent = "";
-
-  setTimeout(aiTurn, 500);
+  <!-- 🧠 Brain Hint -->
+  <div id="wordHint" style="
+    margin-top:15px;
+    font-family:'Press Start 2P', cursive;
+    font-size:0.7em;
+    color:#ffc107;
+    min-height:18px;
+    opacity:0;
+    transition: opacity 0.5s;
+  "></div>
+`;
+  currentWord='Apple'; usedWords=[currentWord];
+  wordList=["Algorithm","Entropy","Hypothesis","Paradox","Labyrinth",
+  "Quantum","Syntax","Recursion","Neural","Topology",
+  "Cognition","Spectrum","Vector","Matrix","Anomaly",
+  "Threshold","Resonance","Asymmetry","Continuum","Parable"];
+}
+  
+function playWord(){
+  const input=document.getElementById('playerWord');
+  let word=input.value.trim(); word=word.charAt(0).toUpperCase()+word.slice(1);
+  const message=document.getElementById('message');
+  if(!word) return;
+  // Mindestlänge
+if(word.length < 6){
+  showWordError("❌ Wrong!");
+  return;
 }
 
-function aiTurn() {
+
+  // Kein gleicher Endbuchstabe wie davor
+const lastTwo = currentWord.slice(-2).toLowerCase();
+if(word.slice(-1).toLowerCase() === lastTwo[0]){
+  showWordError("❌ Weak ending!");
+  return;
+  
+}
+  const lastChar=currentWord.slice(-1).toLowerCase();
+  const reversed=currentWord.split("").reverse().join("").toLowerCase();
+  if(word[0].toLowerCase()!==lastChar){showWordError("❌ Wrong!");return;}
+  if(word.toLowerCase()===currentWord.toLowerCase()){showWordError("❌ Repeat!");return;}
+  if(word.toLowerCase()===reversed){showWordError("❌ Reversed!");return;}
+  if(usedWords.map(w=>w.toLowerCase()).includes(word.toLowerCase())){showWordError("❌ Already used!");return;}
+  usedWords.push(word); currentWord=word;
+  document.getElementById('wordDisplay').textContent=``;
+  input.value=''; message.textContent='';
+  setTimeout(aiTurn,500);
+}
+function aiTurn(){
   const lastChar = currentWord.slice(-1).toLowerCase();
   let possible = wordList.filter(
     w => w[0].toLowerCase() === lastChar && !usedWords.includes(w)
-  );
-
-  if (possible.length === 0) {
-    // Wenn AI kein Wort findet, wähle ein zufälliges unbenutztes Wort
+  );// Wenn keine passenden Wörter → Brain Hint
+if(possible.length === 0){
+  setTimeout(showWordChainHint, 5000);
+  return;
+}
+  if(possible.length === 0){
     const remaining = wordList.filter(w => !usedWords.includes(w));
-    if (remaining.length > 0) {
-      const randomWord = remaining[Math.floor(Math.random() * remaining.length)];
-      usedWords.push(randomWord);
-      currentWord = randomWord;
-      document.getElementById("wordDisplay").textContent = ` ${currentWord}`;
+    if(remaining.length > 0){
+      const r = remaining[Math.floor(Math.random() * remaining.length)];
+      usedWords.push(r);
+      currentWord = r;
+      document.getElementById('wordDisplay').textContent = currentWord;
     }
     return;
   }
@@ -174,22 +339,303 @@ function aiTurn() {
   let best = possible[0];
   let max = -1;
 
-  for (let w of possible) {
+  for(let w of possible){
     const next = w.slice(-1).toLowerCase();
-    const options = wordList.filter(
+    const opts = wordList.filter(
       p => p[0].toLowerCase() === next && !usedWords.includes(p)
     );
-    if (options.length > max) {
-      max = options.length;
+    if(opts.length > max){
+      max = opts.length;
       best = w;
     }
-  }
+  } // ✅ DIESE KLAMMER HAT GEFEHLT
 
   usedWords.push(best);
   currentWord = best;
-  document.getElementById("wordDisplay").textContent = ` ${currentWord}`;
-}
-</script>
+  document.getElementById('wordDisplay').textContent = currentWord;
 
+  wordScore++;
+
+  if(wordScore >= 6){
+    const msg = document.getElementById('message');
+    msg.textContent = '';
+    setTimeout(startTicTacToe, 500);
+  }
+}
+
+function showWordChainHint() {
+  const hint = document.getElementById('wordHint');
+  if (!hint) return; // Falls das Element noch nicht geladen ist
+  hint.textContent = "Only the right words will take you further";
+  hint.style.opacity = "1";
+
+  setTimeout(() => {
+    hint.style.opacity = "0";
+  }, 3000);
+}
+// ========================== TIC TAC TOE ==========================
+function startTicTacToe(){
+  stage='tic';
+  const container=document.getElementById('gameContainer');
+  container.innerHTML=`
+    <h1></h1>
+    <div id="boardWrapper"><div id="board"></div></div>
+    <div id="timer">10</div>
+    <div id="message"></div>
+    <div id="scoreboard">Player: 0 | AI: 0 | Draws: 0</div>
+    <div id="level">
+      Level: 
+      <select id="levelSelect">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+  `;
+  board=['','','','','','','','','']; ticScore={player:0,ai:0,draw:0}; gameOver=false; renderBoard(); startTimer();
+}
+
+function renderBoard(){
+  const b=document.getElementById('board');
+  b.innerHTML='';
+  board.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='cell';
+    d.textContent=c;
+    if(c==='') d.style.backgroundColor=randomColor();
+    d.onclick=()=>playerMove(i);
+    b.appendChild(d);
+  });
+}
+function randomColor(){const c=["#ba68c8",
+"#64b5f6",
+"#81c784",
+"#ffb74d",
+"#e57373",
+"#ffffff",
+"#4dd0e1"]; return c[Math.floor(Math.random()*c.length)];}
+function startTimer(){clearInterval(timerInterval); timer=10; updateTimerUI(); timerInterval=setInterval(()=>{timer--; updateTimerUI(); if(timer===0){clearInterval(timerInterval); aiMove();}},1000);}
+function updateTimerUI(){const d=document.getElementById('timer'); let seconds = String(timer).padStart(2, '0'); d.textContent=`00:${seconds}`; d.className=''; if(timer>=8)d.classList.add('timer-green'); else if(timer>=5)d.classList.add('timer-yellow'); else d.classList.add('timer-red');}
+function playerMove(i){if(board[i]!=='') return; board[i]='X'; clearInterval(timerInterval); renderBoard(); if(checkWinner('X')){ gameOver=true; ticScore.player++; document.getElementById('message').textContent="You win! 🎉"; updateScore(); if(ticScore.player>=3){ setTimeout(startMathChallenge,800);} else { setTimeout(resetBoard,800);} return;} if(board.every(c=>c!=='')){ gameOver=true; ticScore.draw++; updateScore(); setTimeout(resetBoard,800); return;} setTimeout(aiMove,400);}
+function aiMove(){if(gameOver)return; const lvl=document.getElementById('levelSelect').value; let move;if(lvl==='easy')move=randomMove(); else if(lvl==='medium')move=mediumMove(); else move=hardMove(); board[move]='O'; renderBoard(); if(checkWinner('O')){gameOver=true; ticScore.ai++; document.getElementById('message').textContent="AI wins! 🤖"; updateScore(); if(ticScore.ai>=3){ setTimeout(startMathChallenge,800);} else { setTimeout(resetBoard,800);} return;} if(board.every(c=>c!=='')){gameOver=true; ticScore.draw++; updateScore(); setTimeout(resetBoard,800); return;} startTimer();}
+function resetBoard(){board=['','','','','','','','','']; gameOver=false; document.getElementById('message').textContent=''; renderBoard(); startTimer();}
+function randomMove(){const e=board.map((v,i)=>v===''?i:null).filter(v=>v!==null); return e[Math.floor(Math.random()*e.length)];}
+function mediumMove(){for(let i=0;i<9;i++){if(board[i]===''){board[i]='O'; if(checkWinner('O'))return i; board[i]='';}} for(let i=0;i<9;i++){if(board[i]===''){board[i]='X'; if(checkWinner('X')){board[i]=''; return i;} board[i]='';}} if(board[4]==='') return 4; const c=[0,2,6,8].filter(i=>board[i]===''); if(c.length) return c[Math.floor(Math.random()*c.length)]; return randomMove();}
+function hardMove(){let best=-Infinity; let move; for(let i=0;i<9;i++){if(board[i]===''){board[i]='O'; let s=minimax(board,0,false); board[i]=''; if(s>best){best=s; move=i;}}} return move;}
+function minimax(b,d,max){if(checkWinner('O')) return 10-d; if(checkWinner('X')) return d-10; if(b.every(c=>c!=='')) return 0; if(max){let best=-Infinity; for(let i=0;i<9;i++){if(b[i]===''){b[i]='O'; best=Math.max(best,minimax(b,d+1,false)); b[i]='';}} return best;} else{let best=Infinity; for(let i=0;i<9;i++){if(b[i]===''){b[i]='X'; best=Math.min(best,minimax(b,d+1,true)); b[i]='';}} return best;}}
+function checkWinner(p){const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; return w.some(x=>x.every(i=>board[i]===p));}
+function updateScore(){document.getElementById('scoreboard').textContent=`Player: ${ticScore.player} | AI: ${ticScore.ai} | Draws: ${ticScore.draw}`;}
+
+// ========================== MATH CHALLENGE ==========================
+function startMathChallenge(){
+  stage='math';
+  const container=document.getElementById('gameContainer');
+  container.innerHTML=`
+    <h1></h1>
+    <div id="task">Loading...</div>
+    <div id="inputContainer">
+      <input id="answer" type="number" placeholder="Your answer" autofocus>
+      <button onclick="checkMathAnswer()">Check</button>
+    </div>
+    <div id="timer">00:30</div>
+    <div id="message"></div>
+  `;
+  mathTimer=30; generateMathTask(); startMathTimer();
+}
+
+function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function generateMathTask(){const p=randomInt(1,3); let a,b,c,text; if(p===1){a=randomInt(10,40); b=randomInt(2,12); c=randomInt(5,30); correctAnswer=a+b*c; text=`${a} + ${b} × ${c}`;} if(p===2){a=randomInt(20,80); b=randomInt(2,10); c=randomInt(5,30); correctAnswer=a-b*c; text=`${a} − ${b} × ${c}`;} if(p===3){a=randomInt(20,80); b=randomInt(2,10); c=randomInt(2,6); correctAnswer=a+b*c; text=`${a} + ${b} × ${c}`;} document.getElementById('task').textContent=`${text} = `; document.getElementById('answer').value=''; document.getElementById('message').textContent=''; document.getElementById('answer').focus();}
+function startMathTimer(){clearInterval(mathTimerInterval); mathTimerInterval=setInterval(()=>{mathTimer--; const d=document.getElementById('timer'); const seconds = String(mathTimer).padStart(2, '0'); d.textContent=`00:${seconds}`; d.className=''; if(mathTimer>=20)d.classList.add('timer-green'); else if(mathTimer>=10)d.classList.add('timer-yellow'); else d.classList.add('timer-red'); if(mathTimer<=0){clearInterval(mathTimerInterval); correctMathCount=0; restartGame();}},1000);}
+function checkMathAnswer(){const input=document.getElementById('answer'); if(input.value==='')return; clearInterval(mathTimerInterval); if(Number(input.value)===correctAnswer){correctMathCount++; document.getElementById('message').textContent='✅ Correct!'; if(correctMathCount>=9){ setTimeout(startChromaticTrial,700); return;} setTimeout(()=>{mathTimer=30; generateMathTask(); startMathTimer();},700);} else{document.getElementById('message').textContent='❌ Wrong!'; correctMathCount=0; setTimeout(restartGame,1000);}}
+
+// ========================== CHROMATIC TRIAL ==========================
+const colorsCT=["#ba68c8",
+"#64b5f6",
+"#81c784",
+"#ffb74d",
+"#e57373",
+"#ffffff",
+"#4dd0e1"];
+const CHROMATIC_GOAL="#ba68c8"; 
+let tilesCT=[], chromaticTime=60, chromaticTimerInterval, uniformTimeout=null, solved=false;
+
+function startChromaticTrial(){
+  stage='chromatic';
+  const container=document.getElementById('gameContainer');
+  container.innerHTML=`
+  <h1></h1>
+
+    <div id="grid"></div>
+<div id="chromaticWinText" style="
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1em;
+  color: #ffffff;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1s;
+  pointer-events: none;
+">
+  Correct<br>
+  
+</div>
+    <div id="chromaticText" style="
+      margin-top:15px;
+      font-family:'Press Start 2P', cursive;
+      font-size:0.7em;
+      color:#4dd0e1;
+      min-height:20px;
+      opacity:0;
+      transition: opacity 0.5s;
+    "></div>
+
+    <div id="timer">60</div>
+  `;
+
+  createChromaticGrid();
+  startChromaticTimer();
+
+  // 👉 Text nach 10 Sekunden anzeigen
+  setTimeout(showChromaticMessage, 10000);
+}  
+
+function createChromaticGrid(){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  tilesCT = [];
+  solved = false;
+
+  for(let i=0; i<9; i++){
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+
+    const idx = Math.floor(Math.random() * colorsCT.length);
+    tile.dataset.color = idx;
+    tile.style.backgroundColor = colorsCT[idx];
+
+       tile.onclick = () => {
+      cycleColor(tile);
+      checkWin();
+      checkUniformReset();
+    };
+
+    tilesCT.push(tile);
+    grid.appendChild(tile);
+  }
+}
+
+// Farbe wechseln beim Klick
+function cycleColor(tile){
+  if(solved) return;
+  let idx = Number(tile.dataset.color);
+  idx = (idx + 1) % colorsCT.length;
+  tile.dataset.color = idx;
+  tile.style.backgroundColor = colorsCT[idx];
+}
+
+// Prüfen, ob alle Felder die Ziel-Farbe haben
+function checkWin(){
+  const allGoal = tilesCT.every(
+    t => colorsCT[Number(t.dataset.color)] === CHROMATIC_GOAL
+  );
+
+  if(allGoal && !solved){
+    solved = true;
+    clearInterval(chromaticTimerInterval);
+    clearTimeout(uniformTimeout);
+    showChromaticWin();
+  }
+}
+// Prüfen, ob alle Felder die gleiche Farbe haben (nicht unbedingt Ziel-Farbe)
+function checkUniformReset(){
+  const firstColor = colorsCT[Number(tilesCT[0].dataset.color)];
+  const allSame = tilesCT.every(t => colorsCT[Number(t.dataset.color)] === firstColor);
+  if(allSame && !solved){
+    clearTimeout(uniformTimeout);
+    uniformTimeout = setTimeout(() => {
+      startChromaticTrial(); // Reset auf neue zufällige Farben
+    }, 2000); // 2 Sekunden warten
+  } else {
+    clearTimeout(uniformTimeout);
+  }
+}
+
+// Timer starten
+function startChromaticTimer(){
+  clearInterval(chromaticTimerInterval);
+  chromaticTime = 60;
+  const timerDiv = document.getElementById('timer');
+
+  // erste Anzeige
+  let seconds = String(chromaticTime).padStart(2, '0');
+  timerDiv.textContent = `00:${seconds}`;
+
+  chromaticTimerInterval = setInterval(()=>{
+    chromaticTime--;
+
+    let seconds = String(chromaticTime).padStart(2, '0');
+    timerDiv.textContent = `00:${seconds}`;
+
+    timerDiv.className = '';
+    if(chromaticTime > 30) timerDiv.classList.add('timer-green');
+    else if(chromaticTime > 10) timerDiv.classList.add('timer-yellow');
+    else timerDiv.classList.add('timer-red');
+
+    if(chromaticTime <= 0){
+      clearInterval(chromaticTimerInterval);
+      clearTimeout(uniformTimeout);
+      restartGame();
+    }
+  }, 1000);
+}
+
+function showChromaticMessage(){
+  var text = document.getElementById('chromaticText');
+  if(!text) return;
+
+  text.textContent = " Find the right color";
+  text.style.opacity = "1";
+
+  setTimeout(function(){
+    text.style.opacity = "0";
+  }, 3000);
+}
+    function restartGame(){
+  clearInterval(chromaticTimerInterval);
+  clearInterval(mathTimerInterval);
+  clearTimeout(uniformTimeout);
+
+  const container = document.getElementById('gameContainer');
+  container.innerHTML = `
+    <h1></h1>
+    <button onclick="startWordChain()">START</button>
+  `;
+
+  // Variablen zurücksetzen
+  stage = 'start';
+  wordScore = 0;
+  ticScore = {player:0, ai:0, draw:0};
+  currentWord = '';
+  usedWords = [];
+  board = [];
+  gameOver = false;
+  correctAnswer = 0;
+  correctMathCount = 0;
+}
+function showChromaticWin(){
+  const text = document.getElementById('chromaticWinText');
+  if(!text) return;
+
+  text.style.opacity = "1";
+
+  setTimeout(() => {
+    restartGame();
+  }, 5000); // ⏱ nach 5 Sekunden zurück zum Start
+}
+
+</script>
 </body>
 </html>
