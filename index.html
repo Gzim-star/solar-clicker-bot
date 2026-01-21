@@ -91,17 +91,22 @@ button:hover { background: #4caf50; }
   align-items:center;
   padding:20px;
 ">
-  <p>🧩 Solve the puzzle to close this overlay!</p>
+  <p>🧩 Solve the 3x3 puzzle to close this overlay!</p>
   <div id="puzzle" style="
     display:grid;
-    grid-template-columns: 100px 100px;
+    grid-template-columns: 100px 100px 100px;
     grid-gap:5px;
     margin-top:20px;
   ">
-    <div class="puzzle-piece" draggable="true" data-pos="1" style="width:100px;height:100px;background:red;cursor:grab;"></div>
-    <div class="puzzle-piece" draggable="true" data-pos="2" style="width:100px;height:100px;background:blue;cursor:grab;"></div>
-    <div class="puzzle-piece" draggable="true" data-pos="3" style="width:100px;height:100px;background:green;cursor:grab;"></div>
-    <div class="puzzle-piece" draggable="true" data-pos="4" style="width:100px;height:100px;background:yellow;cursor:grab;"></div>
+    <div class="puzzle-piece" data-pos="1" style="width:100px;height:100px;background:red;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="2" style="width:100px;height:100px;background:blue;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="3" style="width:100px;height:100px;background:green;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="4" style="width:100px;height:100px;background:yellow;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="5" style="width:100px;height:100px;background:orange;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="6" style="width:100px;height:100px;background:purple;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="7" style="width:100px;height:100px;background:pink;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="8" style="width:100px;height:100px;background:cyan;cursor:pointer;"></div>
+    <div class="puzzle-piece" data-pos="9" style="width:100px;height:100px;background:white;cursor:pointer;"></div>
   </div>
   <p id="puzzleMessage" style="margin-top:15px;"></p>
 </div>
