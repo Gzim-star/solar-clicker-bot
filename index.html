@@ -77,6 +77,7 @@ button:hover { background: #4caf50; }
 </head>
 
 <body>
+<!-- Overlay -->
 <div id="dimensionOverlay" style="
   display:none;
   position:fixed;
@@ -91,27 +92,22 @@ button:hover { background: #4caf50; }
   align-items:center;
   padding:20px;
 ">
-  <p>🧩</p>
+  <p>🧩 Solve the puzzle to close this overlay!</p>
   <div id="puzzle" style="
     display:grid;
-    grid-template-columns: 100px 100px 100px;
+    grid-template-columns: 100px 100px;
     grid-gap:5px;
     margin-top:20px;
   ">
-    <div class="puzzle-piece" data-pos="1" style="width:100px;height:100px;background:red;cursor:pointer;"></div>
-    <div class="puzzle-piece" data-pos="2" style="width:100px;height:100px;background:blue;cursor:pointer;"></div>
-    <div class="puzzle-piece" data-pos="3" style="width:100px;height:100px;background:green;cursor:pointer;"></div>
-    <div class="puzzle-piece" data-pos="4" style="width:100px;height:100px;background:yellow;cursor:pointer;"></div>
-    <div class="puzzle-piece" data-pos="5" style="width:100px;height:100px;background:orange;cursor:pointer;"></div>
-    <div class="puzzle-piece" data-pos="6" style="width:100px;height:100px;background:purple;cursor:pointer;"></div>
-    <div class="puzzle-piece" data-pos="7" style="width:100px;height:100px;background:pink;cursor:pointer;"></div>
-    <div class="puzzle-piece" data-pos="8" style="width:100px;height:100px;background:cyan;cursor:pointer;"></div>
-    <div class="puzzle-piece" data-pos="9" style="width:100px;height:100px;background:white;cursor:pointer;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="1" style="width:100px;height:100px;background:red;cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="2" style="width:100px;height:100px;background:blue;cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="3" style="width:100px;height:100px;background:green;cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="4" style="width:100px;height:100px;background:yellow;cursor:grab;"></div>
   </div>
   <p id="puzzleMessage" style="margin-top:15px;"></p>
 </div>
 
-  <div id="gameContainer">
+   <div id="gameContainer">
   <h1>🧠</h1>
   <div id="wordDisplay">Start word: Apple</div>
 
@@ -137,44 +133,52 @@ const overlay = document.getElementById('dimensionOverlay');
 const pieces = document.querySelectorAll('.puzzle-piece');
 const message = document.getElementById('puzzleMessage');
 
-let selected = null;
+let dragged = null;
 
-// Funktion zum Öffnen des Overlay (kann angepasst werden)
 function openOverlay() {
   overlay.style.display = 'flex';
 }
 
-// Klick-Tausch Logik
+// Drag & Drop
 pieces.forEach(piece => {
-  piece.addEventListener('click', () => {
-    if(!selected){
-      selected = piece;
-      piece.style.outline = "3px solid white"; // markiert Auswahl
-    } else {
-      // tauschen
-      let tempColor = piece.style.background;
-      piece.style.background = selected.style.background;
-      selected.style.background = tempColor;
-      selected.style.outline = "9"; // Auswahl entfernen
-      selected = null;
+  piece.addEventListener('dragstart', e => {
+    dragged = e.target;
+  });
+
+  piece.addEventListener('dragover', e => {
+    e.preventDefault();
+  });
+
+  piece.addEventListener('drop', e => {
+    e.preventDefault();
+    if(dragged && dragged !== e.target){
+      // Swap Farben
+      let tempColor = dragged.style.background;
+      dragged.style.background = e.target.style.background;
+      e.target.style.background = tempColor;
       checkPuzzle();
+    } else {
+      // dasselbe Feld gezogen -> nichts passiert
+      message.textContent = "⚠️ Cannot swap the same piece!";
     }
+    dragged = null; // Reset
   });
 });
 
 function checkPuzzle(){
-  const correctColors = ["red","blue","green","yellow","orange","purple","pink","cyan","white"];
+  const correctColors = ["red","blue","green","yellow"];
   const currentColors = Array.from(pieces).map(p => p.style.background);
   if(currentColors.join() === correctColors.join()){
-    
+    message.textContent = "✅ Correct! Overlay will close...";
     setTimeout(() => {
       overlay.style.display = 'none';
       message.textContent = "";
     }, 1000);
   } else {
-    
+    message.textContent = "🧩 Not solved yet!";
   }
 }
+
 
 
 
