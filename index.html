@@ -76,7 +76,33 @@ button:hover { background: #4caf50; }
 </style>
 </head>
 <body>
+<div id="systemOverlay" style="
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.96);
+  color: #808080;
+  font-family: 'Press Start 2P', cursive;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 6000;
+  text-align: center;
+  padding: 20px;
+">
+  <div style="line-height:1.9;">
+    <div style="font-size:1em; color:white;">BrainTrials</div><br>
 
+    Status: Stable<br>
+    Mode: Deterministic<br>
+    Input: Closed<br>
+    Ghost: Active<br>
+    Runtime: Isolated<br><br>
+
+    <span style="font-size:0.6em; opacity:0.6;">
+      Click anywhere to return
+    </span>
+  </div>
+</div>
   <div id="gameContainer">
   <h1>🧠</h1>
   <div id="wordDisplay">Start word: Apple</div>
@@ -98,7 +124,17 @@ button:hover { background: #4caf50; }
 </div>
 
 <script>
+const systemOverlay = document.getElementById('systemOverlay');
 
+// 🔓 manuelles Öffnen (z. B. später per Ghost / Punkt / unsichtbarer Zone)
+function openSystemOverlay(){
+  systemOverlay.style.display = 'flex';
+}
+
+// 🔒 Schließen durch Klick irgendwo
+systemOverlay.addEventListener('click', () => {
+  systemOverlay.style.display = 'none';
+});
 
 
   // 🔒 Brain-Test Game Original by Gëzim Hasani
