@@ -77,7 +77,30 @@ button:hover { background: #4caf50; }
 </head>
 
 <body>
-<div id="gameContainer">
+<!-- Overlay -->
+<div id="dimensionOverlay" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,0.95);
+  color:white;
+  text-align:center;
+  z-index:6000;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+">
+  <p>🧩 Solve the puzzle to enter BrainTrials!</p>
+  <input type="number" id="puzzleInput" placeholder="Enter number 1-10" style="padding:10px; font-size:16px; text-align:center;">
+  <button id="checkPuzzle" style="margin-top:20px; padding:10px 20px;">Submit</button>
+  <p id="puzzleMessage" style="margin-top:15px;"></p>
+</div>
+
+<!-- ©️2026 Button -->
+<div id="copyright" style="position:absolute; bottom:10px; right:10px; cursor:pointer;">©️2026</div>
+  <div id="gameContainer">
   <h1>🧠</h1>
   <div id="wordDisplay">Start word: Apple</div>
 
@@ -98,7 +121,38 @@ button:hover { background: #4caf50; }
 </div>
 
 <script>
-// 🔒 Brain-Test Game Original by Gëzim Hasani
+let puzzleNumber = Math.floor(Math.random()*10)+1; // zufällige Zahl 1-10
+console.log("Puzzle Number (for testing):", puzzleNumber); // zum Testen
+
+// Overlay erscheint nur beim Klick auf ©️2026
+document.getElementById('copyright').onclick = () => {
+  document.getElementById('dimensionOverlay').style.display = 'flex';
+};
+
+// Puzzle prüfen
+document.getElementById('checkPuzzle').onclick = () => {
+  let input = parseInt(document.getElementById('puzzleInput').value);
+  let message = document.getElementById('puzzleMessage');
+
+  if(input === puzzleNumber){
+    message.textContent = "✅ Correct! Overlay will close...";
+    setTimeout(() => {
+      document.getElementById('dimensionOverlay').style.display = 'none';
+      // Hier BrainTrials starten oder das Spiel freigeben
+      startBrainTrials();
+    }, 1000);
+  } else {
+    message.textContent = "❌ Wrong! Try again.";
+  }
+};
+
+// Dummy Funktion für BrainTrials Start
+function startBrainTrials(){
+  console.log("BrainTrials can now start!");
+  // Hier dein BrainTrials Start-Code einfügen
+}
+
+  // 🔒 Brain-Test Game Original by Gëzim Hasani
 const gameID = "2025-GH-BC01"; // eindeutige ID für dein Spiel
 const gameVersion = "1.0.0";
 const creationDate = "2025-12-14";
