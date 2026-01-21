@@ -92,9 +92,18 @@ button:hover { background: #4caf50; }
   align-items:center;
   padding:20px;
 ">
-  <p>🧩 Solve the puzzle to enter BrainTrials!</p>
-  <input type="number" id="puzzleInput" placeholder="Enter number 1-10" style="padding:10px; font-size:16px; text-align:center;">
-  <button id="checkPuzzle" style="margin-top:20px; padding:10px 20px;">Submit</button>
+  <p>🧩 Solve the puzzle to close this overlay!</p>
+  <div id="puzzle" style="
+    display:grid;
+    grid-template-columns: 100px 100px;
+    grid-gap:5px;
+    margin-top:20px;
+  ">
+    <div class="puzzle-piece" draggable="true" data-pos="1" style="width:100px;height:100px;background:red;cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="2" style="width:100px;height:100px;background:blue;cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="3" style="width:100px;height:100px;background:green;cursor:grab;"></div>
+    <div class="puzzle-piece" draggable="true" data-pos="4" style="width:100px;height:100px;background:yellow;cursor:grab;"></div>
+  </div>
   <p id="puzzleMessage" style="margin-top:15px;"></p>
 </div>
 
@@ -121,36 +130,53 @@ button:hover { background: #4caf50; }
 </div>
 
 <script>
-let puzzleNumber = Math.floor(Math.random()*10)+1; // zufällige Zahl 1-10
-console.log("Puzzle Number (for testing):", puzzleNumber); // zum Testen
+const overlay = document.getElementById('dimensionOverlay');
+const copyright = document.getElementById('copyright');
+const pieces = document.querySelectorAll('.puzzle-piece');
+const message = document.getElementById('puzzleMessage');
 
-// Overlay erscheint nur beim Klick auf ©️2026
-document.getElementById('copyright').onclick = () => {
-  document.getElementById('dimensionOverlay').style.display = 'flex';
+let dragged;
+
+copyright.onclick = () => {
+  overlay.style.display = 'flex';
 };
 
-// Puzzle prüfen
-document.getElementById('checkPuzzle').onclick = () => {
-  let input = parseInt(document.getElementById('puzzleInput').value);
-  let message = document.getElementById('puzzleMessage');
+// Drag & Drop
+pieces.forEach(piece => {
+  piece.addEventListener('dragstart', e => {
+    dragged = e.target;
+  });
 
-  if(input === puzzleNumber){
+  piece.addEventListener('dragover', e => {
+    e.preventDefault();
+  });
+
+  piece.addEventListener('drop', e => {
+    e.preventDefault();
+    if(dragged !== e.target){
+      // Swap colors (oder Inhalt)
+      let tempColor = dragged.style.background;
+      dragged.style.background = e.target.style.background;
+      e.target.style.background = tempColor;
+      checkPuzzle();
+    }
+  });
+});
+
+function checkPuzzle(){
+  const correctColors = ["red","blue","green","yellow"];
+  const currentColors = Array.from(pieces).map(p => p.style.background);
+  if(currentColors.join() === correctColors.join()){
     message.textContent = "✅ Correct! Overlay will close...";
     setTimeout(() => {
-      document.getElementById('dimensionOverlay').style.display = 'none';
-      // Hier BrainTrials starten oder das Spiel freigeben
-      startBrainTrials();
+      overlay.style.display = 'none';
+      message.textContent = "";
     }, 1000);
   } else {
-    message.textContent = "❌ Wrong! Try again.";
+    message.textContent = "🧩 Not solved yet!";
   }
-};
-
-// Dummy Funktion für BrainTrials Start
-function startBrainTrials(){
-  console.log("BrainTrials can now start!");
-  // Hier dein BrainTrials Start-Code einfügen
 }
+
 
   // 🔒 Brain-Test Game Original by Gëzim Hasani
 const gameID = "2025-GH-BC01"; // eindeutige ID für dein Spiel
