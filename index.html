@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>State Puzzle 6x6 Grün Linien</title>
+<title>State Puzzle 6x6</title>
 <style>
   body {
     margin: 0;
@@ -15,33 +15,24 @@
     overflow: hidden;
   }
 
-  /* Grid Container */
   #grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(6, 1fr);
-    gap: 0; /* Wir machen die Trennlinien über Border */
-    width: 90vmin;
-    height: 90vmin;
+    grid-template-columns: repeat(6, 60px); /* 6 Spalten */
+    grid-template-rows: repeat(6, 60px);    /* 6 Reihen */
+    gap: 5px;
     transition: opacity 0.5s;
   }
 
-  /* Zellen */
   .cell {
-    background-color: #808080; /* Grau */
+    background-color: #808080;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.2s;
-    width: 100%;
-    height: 100%;
-    border: 2px solid green; /* Grüne Trennlinien */
-    box-sizing: border-box;  /* Damit die Border nicht die Größe zerstört */
   }
 
   .active {
     opacity: 0.4;
   }
 
-  /* Restart Button */
   #restart {
     position: absolute;
     top: 50%;
@@ -66,7 +57,7 @@
 <script>
 const grid = document.getElementById("grid");
 const restartBtn = document.getElementById("restart");
-const size = 6;
+const size = 6; // 6x6 Grid
 let state = [];
 let gameOver = false;
 
