@@ -1,233 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Word Chain Game</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
+<title>Puzzle</title>
 <style>
-html, body { height: 100%; margin: 0; }
-body {
-  display: grid;
-  place-items: center;
-  background: #000000;
-  color: white;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  overflow-x: hidden;
-}
-#gameContainer {
-  width: 90%;
-  max-width: 700px;
-  padding: 20px;
-  background: #000000;
-  border-radius: 15px;
-  box-shadow: 0 0 25px rgba(255,255,255,0.08);
-  box-sizing: border-box;
-}
-h1 {
-  font-size: 1.8em;
-  margin-bottom: 20px;
-  color: #4dd0e1;
-  font-family: 'Press Start 2P', cursive;
-}
-#wordDisplay {
-  font-size: 1.4em;
-  margin: 20px 0;
-  min-height: 50px;
-  font-family: 'Press Start 2P', cursive;
-}
-#inputContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#playerWord {
-  width: 80%;
-  max-width: 400px;
-  font-size: 1em;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 15px;
-  text-align: center;
-  box-sizing: border-box;
-}
-button {
-  padding: 12px 25px;
-  font-size: 1em;
-  border: none;
-  border-radius: 10px;
-  background: #2e7d32;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-button:hover { background: #4caf50; }
-#message { margin-top: 20px; font-size: 1em; min-height: 40px; }
-@media (max-width: 768px) {
-  h1 { font-size: 1.4em; }
-  #wordDisplay { font-size: 1.2em; }
-  #playerWord { font-size: 0.9em; }
-  button { font-size: 0.9em; padding: 10px 20px; }
-}
+  body {
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+  }
+
+  #puzzle {
+    display:grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
+    gap:4px;
+  }
+
+  .tile {
+    background:#808080;
+    color:#000;
+    font-family: monospace;
+    font-size:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .empty {
+    background:#000;
+    cursor:default;
+  }
 </style>
 </head>
 <body>
-<div id="systemOverlay" style="
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.96);
-  color: #808080;
-  font-family: 'Press Start 2P', cursive;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 6000;
-  text-align: center;
-  padding: 20px;
-">
-  <div style="line-height:1.9;">
-    <div style="font-size:1em; color:white;">BrainTrials</div><br>
 
-    Status: Stable<br>
-    Mode: Deterministic<br>
-    Input: Closed<br>
-    Ghost: Active<br>
-    Runtime: Isolated<br><br>
-
-    <span style="font-size:0.6em; opacity:0.6;">
-      Click anywhere to return
-    </span>
-  </div>
-</div>
-  <div id="gameContainer">
-  <h1>🧠</h1>
-  <div id="wordDisplay">Start word: Apple</div>
-
-  <div id="inputContainer">
-    <input
-      type="text"
-      id="playerWord"
-      placeholder="Type your word here"
-      inputmode="text"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="none"
-    >
-    <button onclick="playWord()">OK</button>
-  </div>
-
-  <div id="message"></div>
-</div>
+<div id="puzzle"></div>
 
 <script>
-const systemOverlay = document.getElementById('systemOverlay');
+const puzzle = document.getElementById("puzzle");
+let tiles = [1,2,3,4,5,6,7,8,null];
 
-// 🔓 manuelles Öffnen (z. B. später per Ghost / Punkt / unsichtbarer Zone)
-function openSystemOverlay(){
-  systemOverlay.style.display = 'flex';
+function shuffle(){
+  for(let i=tiles.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+  }
 }
 
-// 🔒 Schließen durch Klick irgendwo
-systemOverlay.addEventListener('click', () => {
-  systemOverlay.style.display = 'none';
-});
-
-
-  // 🔒 Brain-Test Game Original by Gëzim Hasani
-const gameID = "2025-GH-BC01"; // eindeutige ID für dein Spiel
-const gameVersion = "1.0.0";
-const creationDate = "2025-12-14";
-
-let currentWord = "Apple";
-const usedWords = [currentWord];
-
-const wordList = [
-  "Apple","Elephant","Tiger","Rabbit","Tree","Eagle","Egg","Giraffe",
-  "Fish","Horse","Orange","Grapes","Snake","Emu","Umbrella","Lion",
-  "Nut","Tapir","Rat","Tomato","Owl","Lemon","Night","Hat","Turtle",
-  "Eel","Lamb","Bread","Dog","Goat","Ant","Seal","Lily","Yak","Kangaroo"
-];
-
-function playWord() {
-  const input = document.getElementById("playerWord");
-  let word = input.value.trim().toLowerCase();
-  word = word.charAt(0).toUpperCase() + word.slice(1);
-  const message = document.getElementById("message");
-
-  if (!word) return;
-
-  const lastChar = currentWord.slice(-1).toLowerCase();
-  const reversed = currentWord.split("").reverse().join("").toLowerCase();
-
-  if (word[0].toLowerCase() !== lastChar) {
-    message.textContent = "❌ Wrong! Think carefully!";
-    return;
-  }
-
-  if (word.toLowerCase() === currentWord.toLowerCase()) {
-    message.textContent = "❌ You cannot repeat the same word!";
-    return;
-  }
-
-  if (word.toLowerCase() === reversed) {
-    message.textContent = "❌ Reversed words are not allowed!";
-    return;
-  }
-
-  if (usedWords.map(w => w.toLowerCase()).includes(word.toLowerCase())) {
-    message.textContent = "❌ This word was already used!";
-    return;
-  }
-
-  usedWords.push(word);
-  currentWord = word;
-  document.getElementById("wordDisplay").textContent = `Your word: ${currentWord}`;
-  input.value = "";
-  message.textContent = "";
-
-  setTimeout(aiTurn, 500);
-}
-
-function aiTurn() {
-  const lastChar = currentWord.slice(-1).toLowerCase();
-  let possible = wordList.filter(
-    w => w[0].toLowerCase() === lastChar && !usedWords.includes(w)
-  );
-
-  if (possible.length === 0) {
-    // Wenn AI kein Wort findet, wähle ein zufälliges unbenutztes Wort
-    const remaining = wordList.filter(w => !usedWords.includes(w));
-    if (remaining.length > 0) {
-      const randomWord = remaining[Math.floor(Math.random() * remaining.length)];
-      usedWords.push(randomWord);
-      currentWord = randomWord;
-      document.getElementById("wordDisplay").textContent = ` ${currentWord}`;
+function render(){
+  puzzle.innerHTML = "";
+  tiles.forEach((value, index) => {
+    const div = document.createElement("div");
+    div.className = "tile";
+    if(value === null){
+      div.classList.add("empty");
+    } else {
+      div.textContent = value;
+      div.onclick = () => move(index);
     }
-    return;
-  }
-
-  let best = possible[0];
-  let max = -1;
-
-  for (let w of possible) {
-    const next = w.slice(-1).toLowerCase();
-    const options = wordList.filter(
-      p => p[0].toLowerCase() === next && !usedWords.includes(p)
-    );
-    if (options.length > max) {
-      max = options.length;
-      best = w;
-    }
-  }
-
-  usedWords.push(best);
-  currentWord = best;
-  document.getElementById("wordDisplay").textContent = ` ${currentWord}`;
+    puzzle.appendChild(div);
+  });
 }
+
+function move(index){
+  const emptyIndex = tiles.indexOf(null);
+  const validMoves = [
+    emptyIndex - 1,
+    emptyIndex + 1,
+    emptyIndex - 3,
+    emptyIndex + 3
+  ];
+
+  if(validMoves.includes(index)){
+    [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
+    render();
+    checkWin();
+  }
+}
+
+function checkWin(){
+  const win = [1,2,3,4,5,6,7,8,null];
+  if(JSON.stringify(tiles) === JSON.stringify(win)){
+    setTimeout(() => alert("🧩 Gelöst"), 100);
+  }
+}
+
+shuffle();
+render();
 </script>
 
 </body>
