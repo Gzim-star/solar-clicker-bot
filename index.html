@@ -2,13 +2,13 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>State Puzzle 6x6 Rund</title>
+<title>State Puzzle 12x12 Rund</title>
 <style>
   body {
     margin: 0;
     height: 100vh;
     display: flex;
-    flex-direction: column; /* damit Button unter Grid kommt */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: #000;
@@ -19,9 +19,9 @@
   /* Grid */
   #grid {
     display: grid;
-    grid-template-columns: repeat(6, 60px);
-    grid-template-rows: repeat(6, 60px);
-    gap: 5px;
+    grid-template-columns: repeat(12, 40px); /* 12 Spalten, kleinere Zellen */
+    grid-template-rows: repeat(12, 40px);    /* 12 Reihen */
+    gap: 4px;
     transition: opacity 0.5s;
   }
 
@@ -58,17 +58,17 @@
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    background-color: limegreen; /* hier Farbe ändern */
+    background-color: limegreen; /* Farbe ändern wie du willst */
     color: black;
     border: none;
     border-radius: 8px;
     font-weight: bold;
     transition: background 0.3s;
-    margin-top: 15px; /* Abstand über Button */
+    margin-top: 15px;
   }
 
   #solutionBtn:hover {
-    background-color: #32cd32; /* Hover-Farbe */
+    background-color: #32cd32;
   }
 </style>
 </head>
@@ -86,7 +86,7 @@
 const grid = document.getElementById("grid");
 const restartBtn = document.getElementById("restart");
 const solutionBtn = document.getElementById("solutionBtn");
-const size = 6; 
+const size = 12; // 12x12 Grid = 144 Felder
 let state = [];
 let gameOver = false;
 
@@ -193,7 +193,7 @@ function solvePuzzle(state) {
 // Button klick: Lösung anzeigen
 solutionBtn.onclick = () => {
   let solution = solvePuzzle(state);
-  alert("Klicke diese Zellen: " + solution.map(i => `(${Math.floor(i/6)+1},${i%6+1})`).join(", "));
+  alert("Klicke diese Zellen: " + solution.map(i => `(${Math.floor(i/size)+1},${i%size+1})`).join(", "));
 }
 
 render();
