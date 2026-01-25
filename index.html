@@ -4,30 +4,34 @@
 <meta charset="UTF-8">
 <title>State Puzzle</title>
 <style>
-  body{
-    margin:0;
-    background:#000;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+  /* Body und Hintergrund */
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000; /* Schwarzer Hintergrund */
+    font-family: Arial, sans-serif;
   }
 
-  #grid{
-    display:grid;
-    grid-template-columns:repeat(3,80px);
-    grid-template-rows:repeat(3,80px);
-    gap:6px;
+  /* Grid */
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
+    gap: 6px;
   }
 
-  .cell{
-    background:#808080;
-    cursor:pointer;
-    transition:opacity 0.2s;
+  /* Zellen */
+  .cell {
+    background-color: #808080; /* Grau */
+    cursor: pointer;
+    transition: opacity 0.2s;
   }
 
-  .active{
-    opacity:0.4; /* nur ein Hauch – kein Hinweis */
+  .active {
+    opacity: 0.4; /* leicht transparent */
   }
 </style>
 </head>
@@ -40,46 +44,47 @@ const grid = document.getElementById("grid");
 const size = 3;
 let state = [];
 
-// Initialisierung
-for(let i=0;i<size*size;i++){
+// Zufällige Initialisierung der Zellen
+for(let i=0; i<size*size; i++){
   state[i] = Math.random() > 0.5 ? 1 : 0;
 }
 
-function render(){
+// Render Funktion
+function render() {
   grid.innerHTML = "";
-  state.forEach((v,i)=>{
-    const d = document.createElement("div");
-    d.className = "cell" + (v ? " active" : "");
-    d.onclick = ()=>toggle(i);
-    grid.appendChild(d);
+  state.forEach((v, i) => {
+    const cell = document.createElement("div");
+    cell.className = "cell" + (v ? " active" : "");
+    cell.onclick = () => toggle(i);
+    grid.appendChild(cell);
   });
 }
 
-function toggle(i){
+// Zellen toggeln
+function toggle(i) {
   const neighbors = [
-    i,
-    i-1, i+1,
+    i, i-1, i+1,
     i-size, i+size
   ];
 
-  neighbors.forEach(n=>{
+  neighbors.forEach(n => {
     if(
-      n>=0 &&
-      n<size*size &&
-      Math.abs((n%size)-(i%size))<=1
-    ){
+      n >= 0 &&
+      n < size*size &&
+      Math.abs((n % size) - (i % size)) <= 1
+    ) {
       state[n] ^= 1;
     }
   });
 
   render();
-  check();
+  checkWin();
 }
 
-function check(){
-  if(state.every(v=>v===0)){
-    // kein Text, kein Popup
-    grid.style.opacity = "0.3";
+// Überprüfung, ob alle Zellen aus sind
+function checkWin() {
+  if(state.every(v => v === 0)){
+    grid.style.opacity = "0.3"; // alle Zellen leicht transparent
   }
 }
 
