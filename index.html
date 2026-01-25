@@ -51,17 +51,26 @@
     display: none;
     z-index: 1000;
   }
-
-  /* Lösung Button */
-  #solutionBtn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 2000;
-    padding: 10px 15px;
-    font-size: 14px;
+/* Lösung Button jetzt zentriert unter dem Board */
+#solutionBtn {
+    display: block;            /* wichtig für margin auto */
+    margin: 15px auto 0 auto;  /* oben 15px Abstand, automatisch zentriert */
+    padding: 10px 20px;        /* Größe des Buttons */
+    font-size: 16px;           /* Schriftgröße */
     cursor: pointer;
-  }
+    background-color: limegreen; /* neue Farbe */
+    color: black;               /* Textfarbe */
+    border: none;               /* ohne Rahmen */
+    border-radius: 8px;         /* leicht abgerundete Ecken */
+    font-weight: bold;          /* schöner Text */
+    transition: background 0.3s;
+}
+
+/* Optional: Hover-Effekt */
+#solutionBtn:hover {
+    background-color: #32cd32; /* dunkleres Grün beim Überfahren */
+}
+
 </style>
 </head>
 <body>
