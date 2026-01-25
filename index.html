@@ -2,96 +2,87 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Puzzle</title>
+<title>State Puzzle</title>
 <style>
-  body {
+  body{
+    margin:0;
     background:#000;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
-    margin:0;
   }
 
-  #puzzle {
+  #grid{
     display:grid;
-    grid-template-columns: repeat(3, 80px);
-    grid-template-rows: repeat(3, 80px);
-    gap:4px;
+    grid-template-columns:repeat(3,80px);
+    grid-template-rows:repeat(3,80px);
+    gap:6px;
   }
 
-  .tile {
+  .cell{
     background:#808080;
-    color:#000;
-    font-family: monospace;
-    font-size:20px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
     cursor:pointer;
-    user-select:none;
+    transition:opacity 0.2s;
   }
 
-  .empty {
-    background:#000;
-    cursor:default;
+  .active{
+    opacity:0.4; /* nur ein Hauch – kein Hinweis */
   }
 </style>
 </head>
 <body>
 
-<div id="puzzle"></div>
+<div id="grid"></div>
 
 <script>
-const puzzle = document.getElementById("puzzle");
-let tiles = [1,2,3,4,5,6,7,8,null];
+const grid = document.getElementById("grid");
+const size = 3;
+let state = [];
 
-function shuffle(){
-  for(let i=tiles.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
-  }
+// Initialisierung
+for(let i=0;i<size*size;i++){
+  state[i] = Math.random() > 0.5 ? 1 : 0;
 }
 
 function render(){
-  puzzle.innerHTML = "";
-  tiles.forEach((value, index) => {
-    const div = document.createElement("div");
-    div.className = "tile";
-    if(value === null){
-      div.classList.add("empty");
-    } else {
-      div.textContent = value;
-      div.onclick = () => move(index);
-    }
-    puzzle.appendChild(div);
+  grid.innerHTML = "";
+  state.forEach((v,i)=>{
+    const d = document.createElement("div");
+    d.className = "cell" + (v ? " active" : "");
+    d.onclick = ()=>toggle(i);
+    grid.appendChild(d);
   });
 }
 
-function move(index){
-  const emptyIndex = tiles.indexOf(null);
-  const validMoves = [
-    emptyIndex - 1,
-    emptyIndex + 1,
-    emptyIndex - 3,
-    emptyIndex + 3
+function toggle(i){
+  const neighbors = [
+    i,
+    i-1, i+1,
+    i-size, i+size
   ];
 
-  if(validMoves.includes(index)){
-    [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
-    render();
-    checkWin();
+  neighbors.forEach(n=>{
+    if(
+      n>=0 &&
+      n<size*size &&
+      Math.abs((n%size)-(i%size))<=1
+    ){
+      state[n] ^= 1;
+    }
+  });
+
+  render();
+  check();
+}
+
+function check(){
+  if(state.every(v=>v===0)){
+    // kein Text, kein Popup
+    grid.style.opacity = "0.3";
   }
 }
 
-function checkWin(){
-  const win = [1,2,3,4,5,6,7,8,null];
-  if(JSON.stringify(tiles) === JSON.stringify(win)){
-    setTimeout(() => alert("🧩 Gelöst"), 100);
-  }
-}
-
-shuffle();
 render();
 </script>
 
