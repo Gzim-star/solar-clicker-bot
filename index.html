@@ -8,6 +8,7 @@
     margin: 0;
     height: 100vh;
     display: flex;
+    flex-direction: column; /* damit Button unter Grid kommt */
     justify-content: center;
     align-items: center;
     background-color: #000;
@@ -18,18 +19,18 @@
   /* Grid */
   #grid {
     display: grid;
-    grid-template-columns: repeat(6, 60px); /* 6 Spalten */
-    grid-template-rows: repeat(6, 60px);    /* 6 Reihen */
+    grid-template-columns: repeat(6, 60px);
+    grid-template-rows: repeat(6, 60px);
     gap: 5px;
     transition: opacity 0.5s;
   }
 
-  /* Zellen - jetzt rund */
+  /* Zellen rund */
   .cell {
     background-color: #808080;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.2s;
-    border-radius: 50%; /* macht die Zellen rund */
+    border-radius: 50%;
   }
 
   .active {
@@ -52,15 +53,22 @@
     z-index: 1000;
   }
 
-  /* Lösung Button */
+  /* Lösung Button unter Grid, zentriert */
   #solutionBtn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 2000;
-    padding: 10px 15px;
-    font-size: 14px;
+    padding: 10px 20px;
+    font-size: 16px;
     cursor: pointer;
+    background-color: limegreen; /* hier Farbe ändern */
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.3s;
+    margin-top: 15px; /* Abstand über Button */
+  }
+
+  #solutionBtn:hover {
+    background-color: #32cd32; /* Hover-Farbe */
   }
 </style>
 </head>
@@ -68,13 +76,17 @@
 
 <div id="grid"></div>
 <div id="restart" title="Restart"></div>
-<button id="solutionBtn">Lösung anzeigen</button>
+
+<!-- Lösung Button unter Grid -->
+<div style="display:flex; justify-content:center; width:100%;">
+  <button id="solutionBtn">Lösung anzeigen</button>
+</div>
 
 <script>
 const grid = document.getElementById("grid");
 const restartBtn = document.getElementById("restart");
 const solutionBtn = document.getElementById("solutionBtn");
-const size = 6; // 6x6 Grid
+const size = 6; 
 let state = [];
 let gameOver = false;
 
@@ -98,10 +110,7 @@ function render() {
 
 // Zellen toggeln
 function toggle(i) {
-  const neighbors = [
-    i, i-1, i+1,
-    i-size, i+size
-  ];
+  const neighbors = [i, i-1, i+1, i-size, i+size];
 
   neighbors.forEach(n => {
     if(n >= 0 && n < size*size && Math.abs((n%size)-(i%size)) <= 1){
@@ -136,18 +145,15 @@ restartBtn.onclick = () => {
   checkWin();
 }
 
-// -------------------
 // Lösung berechnen
 function solvePuzzle(state) {
   const n = size*size;
   let matrix = [];
-  let vector = state.slice(); // Kopie
+  let vector = state.slice(); 
 
-  // Matrix erstellen
   for(let i=0;i<n;i++){
     matrix[i] = Array(n).fill(0);
     matrix[i][i] = 1;
-
     let row = Math.floor(i/size);
     let col = i%size;
     if(row>0) matrix[i][i-size] = 1;
@@ -156,7 +162,6 @@ function solvePuzzle(state) {
     if(col<size-1) matrix[i][i+1] = 1;
   }
 
-  // Gauss-Jordan-Elimination Mod 2
   for(let i=0;i<n;i++){
     if(matrix[i][i]===0){
       for(let j=i+1;j<n;j++){
@@ -178,7 +183,6 @@ function solvePuzzle(state) {
     }
   }
 
-  // vector enthält die Lösung
   let solution = [];
   for(let i=0;i<n;i++){
     if(vector[i]===1) solution.push(i);
