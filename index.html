@@ -16,46 +16,11 @@ body {
   overflow: hidden;
 }
 
-/* Haupt-Wrapper */
+/* Wrapper */
 .game-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-/* Obere Zahlen */
-.top-labels {
-  display: grid;
-  grid-template-columns: 40px repeat(12, min(60px, 6vw));
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.top-labels span {
-  color: #aaa;
-  font-size: 14px;
-  text-align: center;
-}
-
-/* Grid + linke Zahlen */
-.grid-row {
-  display: flex;
-}
-
-/* Linke Zahlen */
-.left-labels {
-  display: grid;
-  grid-template-rows: repeat(12, min(60px, 6vw));
-  gap: 6px;
-  margin-right: 6px;
-}
-
-.left-labels span {
-  color: #aaa;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Grid */
@@ -71,7 +36,13 @@ body {
   background: #777;
   border-radius: 50%;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: black; /* ZAHLEN SCHWARZ */
+  user-select: none;
 }
 
 .cell.active {
@@ -100,26 +71,8 @@ body {
 <body>
 
 <div class="game-wrapper">
-
-  <!-- Obere Zahlen -->
-  <div class="top-labels">
-    <span></span>
-    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
-    <span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
-  </div>
-
-  <!-- Linke Zahlen + Grid -->
-  <div class="grid-row">
-    <div class="left-labels">
-      <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
-      <span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
-    </div>
-
-    <div id="grid"></div>
-  </div>
-
+  <div id="grid"></div>
   <button id="solutionBtn">Lösung anzeigen</button>
-
 </div>
 
 <script>
@@ -128,23 +81,35 @@ const solutionBtn = document.getElementById("solutionBtn");
 const size = 12;
 let state = [];
 
-// Initialisierung
+/* Initialisierung */
 for (let i = 0; i < size * size; i++) {
   state[i] = Math.random() > 0.5 ? 1 : 0;
 }
 
-// Render
+/* Render */
 function render() {
   grid.innerHTML = "";
+
   state.forEach((v, i) => {
     const cell = document.createElement("div");
     cell.className = "cell" + (v ? " active" : "");
+
+    const row = Math.floor(i / size);
+    const col = i % size;
+
+    /* 🔢 NUR ERSTE REIHE & ERSTE SPALTE */
+    if (row === 0) {
+      cell.textContent = col + 1;
+    } else if (col === 0) {
+      cell.textContent = row + 1;
+    }
+
     cell.onclick = () => toggle(i);
     grid.appendChild(cell);
   });
 }
 
-// Toggle
+/* Toggle */
 function toggle(i) {
   const n = [i, i-1, i+1, i-size, i+size];
   n.forEach(x => {
@@ -159,7 +124,7 @@ function toggle(i) {
   render();
 }
 
-// Lösung
+/* Lösung berechnen */
 function solvePuzzle(state) {
   const n = size * size;
   let matrix = [];
@@ -199,7 +164,7 @@ function solvePuzzle(state) {
     .filter(Boolean);
 }
 
-// Button
+/* Button */
 solutionBtn.onclick = () => {
   alert("Klicke diese Zellen:\n" + solvePuzzle(state).join(", "));
 };
