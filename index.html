@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <title>State Puzzle</title>
 <style>
-  /* Body und Hintergrund */
   body {
     margin: 0;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #000; /* Schwarzer Hintergrund */
+    background-color: #000;
     font-family: Arial, sans-serif;
+    overflow: hidden;
   }
 
   /* Grid */
@@ -21,30 +21,58 @@
     grid-template-columns: repeat(3, 80px);
     grid-template-rows: repeat(3, 80px);
     gap: 6px;
+    transition: opacity 0.5s;
   }
 
   /* Zellen */
   .cell {
-    background-color: #808080; /* Grau */
+    background-color: #808080;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, transform 0.2s;
   }
 
   .active {
-    opacity: 0.4; /* leicht transparent */
+    opacity: 0.4;
+    animation: pulse 1.5s infinite;
+  }
+
+  /* Puls-Effekt */
+  @keyframes pulse {
+    0% { box-shadow: 0 0 5px gold; transform: scale(1); }
+    50% { box-shadow: 0 0 15px gold; transform: scale(1.05); }
+    100% { box-shadow: 0 0 5px gold; transform: scale(1); }
+  }
+
+  /* Restart Button */
+  #restart {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: gold;
+    cursor: pointer;
+    box-shadow: 0 0 10px 3px gold;
+    display: none;
+    animation: pulse 2s infinite;
+    z-index: 1000;
   }
 </style>
 </head>
 <body>
 
 <div id="grid"></div>
+<div id="restart" title="Restart"></div>
 
 <script>
 const grid = document.getElementById("grid");
+const restartBtn = document.getElementById("restart");
 const size = 3;
 let state = [];
 
-// Zufällige Initialisierung der Zellen
+// Zufällige Initialisierung
 for(let i=0; i<size*size; i++){
   state[i] = Math.random() > 0.5 ? 1 : 0;
 }
@@ -68,11 +96,7 @@ function toggle(i) {
   ];
 
   neighbors.forEach(n => {
-    if(
-      n >= 0 &&
-      n < size*size &&
-      Math.abs((n % size) - (i % size)) <= 1
-    ) {
+    if(n >= 0 && n < size*size && Math.abs((n%size)-(i%size)) <= 1){
       state[n] ^= 1;
     }
   });
@@ -81,11 +105,24 @@ function toggle(i) {
   checkWin();
 }
 
-// Überprüfung, ob alle Zellen aus sind
+// Überprüfung
 function checkWin() {
   if(state.every(v => v === 0)){
-    grid.style.opacity = "0.3"; // alle Zellen leicht transparent
+    grid.style.opacity = "0.3";
+    restartBtn.style.display = "block";
+  } else {
+    grid.style.opacity = "1";
+    restartBtn.style.display = "none";
   }
+}
+
+// Restart Button Klick
+restartBtn.onclick = () => {
+  for(let i=0;i<size*size;i++){
+    state[i] = Math.random() > 0.5 ? 1 : 0;
+  }
+  render();
+  checkWin();
 }
 
 render();
