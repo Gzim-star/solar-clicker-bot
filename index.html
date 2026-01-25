@@ -13,16 +13,20 @@
     align-items: center;
     background-color: #000;
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    overflow: hidden; /* scrollen verhindern */
   }
 
   /* Grid */
   #grid {
     display: grid;
-    grid-template-columns: repeat(12, 60px); /* 12 Spalten, größere Zellen */
-    grid-template-rows: repeat(12, 60px);    /* 12 Reihen */
+    grid-template-columns: repeat(12, min(60px, 6vw)); /* Zellengröße passt sich Bildschirm an */
+    grid-template-rows: repeat(12, min(60px, 6vw));
     gap: 6px;
     transition: opacity 0.5s;
+
+    margin: auto; /* horizontal zentrieren */
+    max-width: calc(100vw - 20px);  /* verhindert Scrollen */
+    max-height: calc(100vh - 120px); /* Platz für Lösung-Button */
   }
 
   /* Zellen rund */
@@ -30,7 +34,7 @@
     background-color: #808080;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.2s;
-    border-radius: 50%; /* rund */
+    border-radius: 50%;
   }
 
   .active {
@@ -58,7 +62,7 @@
     padding: 12px 24px;
     font-size: 16px;
     cursor: pointer;
-    background-color: limegreen; /* hier Farbe ändern */
+    background-color: limegreen;
     color: black;
     border: none;
     border-radius: 8px;
