@@ -66,17 +66,31 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
+/* Chromatic-Style Hint */
+#hint {
+  position: absolute;
+  bottom: 42px;
+  color: rgba(255,255,255,0.55);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  pointer-events: none;
+  text-align: center;
+}
 </style>
 </head>
 
 <body>
-
+<div id="hint">Visibility is also a state.</div>
 <div class="game-wrapper">
   <div id="grid"></div>
   <button id="solutionBtn">Lösung anzeigen</button>
 </div>
 
 <script>
+
 const grid = document.getElementById("grid");
 const solutionBtn = document.getElementById("solutionBtn");
 const wrapper = document.querySelector(".game-wrapper");
@@ -190,6 +204,17 @@ solutionBtn.onclick = () => {
 };
 
 render();
+const hint = document.getElementById("hint");
+
+/* Chromatic-like behavior */
+setTimeout(() => {
+  hint.style.opacity = "1";
+
+  setTimeout(() => {
+    hint.style.opacity = "0";
+  }, 5000);
+
+}, 5000);
 </script>
 
 </body>
