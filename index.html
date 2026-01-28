@@ -79,6 +79,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 60px;      /* verschiebt es etwas nach unten */
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.4s ease;
@@ -96,10 +97,10 @@ body {
   color: white;
   padding: 18px 22px;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 18px;
   max-width: 85vw;
   text-align: center;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 </style>
 </head>
@@ -134,7 +135,11 @@ solutionBtn.onclick = () => {
 
   solutionOverlay.classList.add("show");
 };
-
+  // ⏳ Nach 3 Sekunden automatisch schließen
+  setTimeout(() => {
+    solutionOverlay.classList.remove("show");
+  }, 3000);
+};
 // 👇 Klick IRGENDWO schließt es
 solutionOverlay.onclick = () => {
   solutionOverlay.classList.remove("show");
