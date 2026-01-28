@@ -111,9 +111,12 @@ body {
 
 <!-- PUZZLE -->
 <div class="game-wrapper">
-  <div id="grid"></div>
   <div id="solutionOverlay">
   <div id="solutionBox"></div>
+</div>
+  <div id="grid"></div>
+
+  <button id="solutionBtn">Lösung anzeigen</button>
 </div>
 
 
@@ -121,6 +124,7 @@ body {
 const flowImage = document.getElementById("flowImage");
 const grid = document.getElementById("grid");
 const wrapper = document.querySelector(".game-wrapper");
+const solutionBtn = document.getElementById("solutionBtn");
 const solutionOverlay = document.getElementById("solutionOverlay");
 const solutionBox = document.getElementById("solutionBox");
 
