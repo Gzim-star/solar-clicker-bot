@@ -102,8 +102,8 @@ body {
   font-size: 12px;        /* 👈 kleinere Schrift */
   line-height: 1.4;       /* 👈 dichter */
 
-  max-width: 60vw;        /* 👈 Box schmaler */
-  max-height: 45vh;       /* 👈 nicht zu hoch */
+  max-width: 65vw;        /* 👈 Box schmaler */
+  max-height: 50vh;       /* 👈 nicht zu hoch */
   overflow-y: auto;       /* 👈 scrollt wenn nötig */
 
   text-align: center;
@@ -151,8 +151,16 @@ const solutionBox = document.getElementById("solutionBox");
 solutionBtn.onclick = () => {
 solutionBox.innerHTML =
   solvePuzzle(state)
-    .map(p => p.replace(/[()]/g, ""))
-    .join(" · ");
+    .map(p => {
+      const [r, c] = p.match(/\d+/g);
+      return `<span style="
+        display:inline-block;
+        min-width:60px;
+        margin:2px 6px;
+        opacity:.85
+      ">${r} ' ${c}</span>`;
+    })
+    .join("");
 
   solutionOverlay.classList.add("show");
 
