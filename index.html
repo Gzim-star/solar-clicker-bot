@@ -95,12 +95,18 @@ body {
 #solutionBox {
   background: white;
   color: black;
-  padding: 18px 20px;
+
+  padding: 10px 12px;     /* 👈 weniger Innenabstand */
   border-radius: 0px;
-  font-size: 18px;
-  max-width: 85vw;
+
+  font-size: 12px;        /* 👈 kleinere Schrift */
+  line-height: 1.4;       /* 👈 dichter */
+
+  max-width: 60vw;        /* 👈 Box schmaler */
+  max-height: 45vh;       /* 👈 nicht zu hoch */
+  overflow-y: auto;       /* 👈 scrollt wenn nötig */
+
   text-align: center;
-  line-height: 1.8;
 }
 #solutionBtn {
   position: absolute;
